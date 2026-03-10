@@ -1,24 +1,76 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>repl.it</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title>Lab 6</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
+
   <body>
-    <h1>My Page</h1>
+    <nav>
+        <div class="nav-wrapper teal" style="padding-left: 10px;">
+           <a href="#!" class="brand-logo">Brewery Search</a>
+        </div>
+    </nav>
 
-    <input type="button" id="alertBtn" value="alert" onclick="alertFun()"/>
-    <input type="button" value="confirm" onclick="confirmFun()"/>
-    <input type="button" value="prompt" onclick="promptFun()"/>
+    <main class="container" style="padding-top: 40px">
+        <div class="section">
+          <img id="cageImg" src="https://www.placecage.com/200/200" alt="Nicolas Cage">
+        </div>
 
-    <span id="result"></span>
+        <div class="divider"></div>
+
+        <div class="section">
+          <table>
+            <thead>
+                <tr>
+                   <th>#</th>
+                   <th>Name</th>
+                   <th>Type</th>
+                   <th>Website</th>
+                </tr>
+            </thead>
+            <tbody id="result"></tbody>
+          </table>
+        </div>
+    </main>
 
     <script>
+      function loaded() {
+        console.log('img loaded');
+      }
+      
+      const img = document.querySelector('#cageImg');
+      img.addEventListener('load', loaded);
 
+      function drawTable(records) {
+          const resultContainer = document.querySelector('#result');
+          let html = '';
+          const data = Array.isArray(records) ? records : [records];
 
+          for (let record of data) {
+              html += `<tr>
+                <td>${record.id}</td>
+                <td>${record.name}</td>
+                <td>${record.brewery_type}</td>
+                <td><a href="${record.website_url}" target="_blank">${record.website_url || 'N/A'}</a></td>    
+              </tr>`;
+          }
+          resultContainer.innerHTML = html;
+      }
+
+      async function getData(url, renderFun) {
+          try {
+              let response = await fetch(url);
+              let result = await response.json();
+              renderFun(result);
+          } catch (e) {
+              console.error(e);
+          }
+      }
+
+      getData("https://api.openbrewerydb.org/breweries/search?query=harry", drawTable);
     </script>
-    <script src="script.js"></script>
   </body>
 </html>
